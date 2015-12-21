@@ -38,7 +38,7 @@ public:
 
     void initialize();
     void emulateCycle();
-    void loadGame(std::string filename);
+    void loadGame(const char* filename);
 
 };
 
