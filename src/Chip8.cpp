@@ -11,21 +11,21 @@ void Chip8::initialize()
     pc = 0x200;
     opcode = 0;
     I = 0;
-    sp= 0;
+    sp = 0;
 
-    for(int i = 0; i < 4096; i++)
+    for (int i = 0; i < 4096; i++)
     {
         //Clearing memory
         memory[i] = 0;
     }
-    for(int i = 0; i < 16; i++)
+    for (int i = 0; i < 16; i++)
     {
         //Clearing V registers, stack, and key states
         V[i] = 0;
         stack[i] = 0;
         key[i] = 0;
     }
-    for(int i = 0; i < (64 * 32); i++)
+    for (int i = 0; i < (64 * 32); i++)
     {
         //Clearing pixel states
         gfx[i] = 0;
@@ -35,19 +35,19 @@ void Chip8::initialize()
     soundTimer = 0;
 }
 
-void Chip8::loadGame(const char* filename)
+void Chip8::loadGame(const char *filename)
 {
     unsigned char buffer[4096 - 512];
-    FILE* file;
+    FILE *file;
     file = fopen(filename, "r");
 
-    if(file)
+    if (file)
     {
         std::cout << "Reading ROM file into buffer." << std::endl;
         fread(buffer, sizeof(char), 4096 - 512, file);
         std::cout << "Loading from buffer into memory" << std::endl;
         int bufferSize = sizeof(buffer) / sizeof(char);
-        for(int i = 0; i < bufferSize; i++)
+        for (int i = 0; i < bufferSize; i++)
         {
             memory[512 + i] = buffer[i];
         }
@@ -70,17 +70,31 @@ void Chip8::emulateCycle()
     //Since each memory location is one byte, and opcodes are two bytes
     //the next two memory bytes are combined into two bytes by shifting
     //the first left by 8 bits, and then OR-ing the current and next byte.
-    opcode = memory[pc] << 8 | memory[pc+1];
+    opcode = memory[pc] << 8 | memory[pc + 1];
 
     //Decode the opcode
     //Using a large switch-case to find which opcode needs to be run
     //Once the proper opcode is found, it will execute the proper operations
 
-    switch(opcode & 0xF000) //Only the first 4 bits are considered for most opcodes
+    switch (opcode & 0xF000) //Only the first 4 bits are considered for most opcodes
     {
         //TODO Make cases for all opcodes
         case 0x0000:
-            //TODO Needs another switch for multiple 0x0000 opcodes
+            //Multiple 0x0000 opcodes
+            switch(opcode & 0x00FF)
+            {
+                case 0x00E0: //0x00E0
+                    //Clear the display
+                    break;
+                case 0x00EE: //0x00EE
+                    //Return from a subroutine
+                    //Set pc to the address at the top of the stack, then decrement sp
+                    break;
+                default:
+                    std::cerr << "Opcode not recognized. Skipping..." << std::endl;
+                    pc += 2;
+                    break;
+            }
             break;
         case 0x1000: //0x1nnn
             //Jump to location nnn. Set pc to nnn
@@ -107,7 +121,7 @@ void Chip8::emulateCycle()
             break;
         case 0x8000:
             //Multiple 0x8000 codes
-            switch(opcode & 0x000F)
+            switch (opcode & 0x000F)
             {
                 case 0x0000: //0x8xy0
                     //Set register Vx to the value of Vy
@@ -144,6 +158,7 @@ void Chip8::emulateCycle()
                 default:
                     std::cerr << "Opcode not recognized. Skipping..." << std::endl;
                     pc += 2;
+                    break;
             }
             break;
         case 0x9000: //0x9xy0
@@ -159,17 +174,82 @@ void Chip8::emulateCycle()
         case 0xC000: //0xCxkk
             //Set register Vx to the value of a random number 0 <= num <= 255 plus kk
             break;
-
+        case 0xD000: //0xDxyn
+            //Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision
+            //Width of sprites are 8 bits
+            break;
+        case 0xE000:
+            //Two 0xE000 opcodes
+            switch (opcode & 0x000F)
+            {
+                case 0x000E: //0xEx9E
+                    //Skip next instruction if key with value of Vx is pressed
+                    //If key corresponding to Vx is currently down, pc is incremented by 2.
+                    break;
+                case 0x0001: //0xExA1
+                    //Skip next instruction if key with value if Vx is not pressed
+                    //If key corresponding to Vx is currently up, pc is incremented by 2.
+                    break;
+                default:
+                    std::cerr << "Opcode not recognized. Skipping..." << std::endl;
+                    pc += 2;
+                    break;
+            }
+            break;
+        case 0xF000:
+            //Multiple 0xF000 opcodes
+            switch (opcode & 0x00FF)
+            {
+                case 0x0007: //0xFx07
+                    //Set Vx = delay timer value.
+                    break;
+                case 0x000A: //0xFx0A
+                    //Wait for a key press, store the value of the key in Vx
+                    //Halt all execution until that key is pressed
+                    break;
+                case 0x0015: //0xFx15
+                    //Set delay timer = Vx
+                    //Opposite of Fx07, sets the value of the delay timer to be the value of Vx
+                    break;
+                case 0x0018: //0xFx18
+                    //Set sound timer = Vx
+                    break;
+                case 0x001E: //0xFx1E
+                    //Set I = I + Vx
+                    //I and Vx are added together, and stored in I
+                    break;
+                case 0x0029: //0xFx29
+                    //Set I = location of sprite for digit Vx
+                    break;
+                case 0x0033: //0xFx33
+                    //Store BCD representation of Vx in memory locations I, I+1, I+2
+                    //Take decimal value of Vx, put hundreds digit in I, tens in I+1, ones in I+2
+                    break;
+                case 0x0055: //0xFx55
+                    //Store registers V0 through Vx in memory starting at location I
+                    //Copies the values of registers V0 through Vx into memory
+                    break;
+                case 0x0065: //0xFx65
+                    //Read registers V0 through Vx from memory starting at location I.
+                    //Reads memory values starting at I into registers V0 through Vx
+                    break;
+                default:
+                    std::cerr << "Opcode not recognized. Skipping..." << std::endl;
+                    pc += 2;
+                    break;
+            }
+            break;
         default:
             std::cerr << "Opcode not recognized. Skipping..." << std::endl;
             pc += 2;
+            break;
     }
 
     //Timers decrement by one every cycle when set to value above zero
     //If sound timer reaches zero, it plays a beep
-    if(delayTimer > 0)
+    if (delayTimer > 0)
         delayTimer--;
-    if(soundTimer > 0)
+    if (soundTimer > 0)
     {
         std::cout << "BEEP" << std::endl;
         soundTimer--;
