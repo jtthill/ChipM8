@@ -1,6 +1,3 @@
-//
-// Created by jtthill on 12/19/15.
-//
 
 #include "Chip8.h"
 #include <iostream>
@@ -78,37 +75,58 @@ void Chip8::emulateCycle()
 
     switch (opcode & 0xF000) //Only the first 4 bits are considered for most opcodes
     {
-        //TODO Make cases for all opcodes
         case 0x0000:
             //Multiple 0x0000 opcodes
-            switch(opcode & 0x00FF)
+            switch (opcode & 0x00FF)
             {
                 case 0x00E0: //0x00E0
-                    //Clear the display
+                    //TODO Clear the display
                     break;
                 case 0x00EE: //0x00EE
-                    //Return from a subroutine
+                    //TODO Return from a subroutine
                     //Set pc to the address at the top of the stack, then decrement sp
                     break;
                 default:
+                {
                     std::cerr << "Opcode not recognized. Skipping..." << std::endl;
                     pc += 2;
                     break;
+                }
             }
             break;
         case 0x1000: //0x1nnn
+        {
             //Jump to location nnn. Set pc to nnn
+            pc = (unsigned short) (opcode & 0x0FFF);
             break;
+        }
         case 0x2000: //0x2nnn
+        {
             //Call subroutine at nnn.
             //Increment sp, put current pc on stack, pc set to nnn
+            stack[sp] = pc;
+            sp++;
+            pc = (unsigned short) (opcode & 0x0FFF);
             break;
+        }
         case 0x3000: //0x3xkk
+        {
             //Skip next instruction if Vx == kk. If condition is true, increment pc by 2.
+            unsigned char kk = (unsigned char) (opcode & 0x00FF);
+            if (V[opcode >> 8 & 0x0F] == kk)
+                pc += 2;
+            pc += 2;
             break;
+        }
         case 0x4000: //0x4xkk
+        {
             //Skip next instruction if Vx != kk. If condition is true, increment pc by 2.
+            unsigned char kk = (unsigned char) (opcode & 0x00FF);
+            if (V[opcode >> 8 & 0x0F] != kk)
+                pc += 2;
+            pc += 2;
             break;
+        }
         case 0x5000: //0x5xy0
             //Skip next instruction if Vx == Vy.
             //Compares registers Vx and Vy, if they are equal, increment pc by 2.
