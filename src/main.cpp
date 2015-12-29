@@ -2,14 +2,15 @@
 #include "Chip8.h"
 
 using namespace std;
-int main()
+int main(int argc, char** argv)
 {
-	const char* filename= "/home/jtthill/Documents/Programming/ChipM8/ROMs/c8games/PONG";
+	const char* filenameL= "../ROMs/PONG";
+    const char* filenameW= "..\\ROMs\\PONG";
 	Chip8 chip8;
 
     chip8.initialize();
-    chip8.loadGame(filename);
-    cout << chip8.memory[512];
-    cout << chip8.memory[514];
+    chip8.loadGame(filenameW);
+    cout << hex << chip8.memory[0x200] << endl;
+    cout << hex << chip8.memory[0x201] << endl;
 	return 0;
 }

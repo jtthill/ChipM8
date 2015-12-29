@@ -3,10 +3,13 @@
 #define CHIPM8_CHIP8_H
 
 #include <string>
+#include <fstream>
 
 
 class Chip8
 {
+private:
+    std::ofstream tracefile;
 public:
 
 //////////////////////////////////////////////////
@@ -36,6 +39,7 @@ public:
     void initialize();
     void emulateCycle();
     void loadGame(const char* filename);
+    void traceLog(const char* message);
 
 };
 

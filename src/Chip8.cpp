@@ -1,4 +1,3 @@
-
 #include "Chip8.h"
 #include <iostream>
 #include <fstream>
@@ -30,6 +29,23 @@ void Chip8::initialize()
 
     delayTimer = 0;
     soundTimer = 0;
+
+    try
+    {
+        tracefile.open("../logs/tracelog.txt");
+    }
+    catch(std::exception e)
+    {
+        try
+        {
+            tracefile.open("..\\logs\\tracelog.txt");
+        }
+        catch (std::exception e)
+        {
+            throw "Trace log couldn't be opened.\n";
+        }
+
+    }
 }
 
 void Chip8::loadGame(const char *filename)
@@ -272,4 +288,9 @@ void Chip8::emulateCycle()
         std::cout << "BEEP" << std::endl;
         soundTimer--;
     }
+}
+
+void Chip8::traceLog(const char* message)
+{
+    tracefile << message << std::endl;
 }
