@@ -39,7 +39,7 @@ public:
     void initialize();
     void emulateCycle();
     void loadGame(const char* filename);
-    void traceLog(const char* message);
+    void traceLog(const char* message, unsigned short opcode);
 
 };
 

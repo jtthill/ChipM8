@@ -144,15 +144,28 @@ void Chip8::emulateCycle()
             break;
         }
         case 0x5000: //0x5xy0
+        {
             //Skip next instruction if Vx == Vy.
             //Compares registers Vx and Vy, if they are equal, increment pc by 2.
+            if (V[opcode >> 8 & 0x0F] == V[opcode >> 4 & 0x00F])
+                pc += 2;
+            pc += 2;
             break;
+        }
         case 0x6000: //0x6xkk
+        {
             //Sets value kk into register Vx.
+            unsigned char kk = (unsigned char) (opcode & 0x00FF);
+            V[opcode >> 8 & 0x0F] = kk;
             break;
+        }
         case 0x7000: //0x7xkk
+        {
             //Set register Vx to Vx + kk
+            unsigned char kk = (unsigned char) (opcode & 0x00FF);
+            V[opcode >> 8 & 0x0F] += kk;
             break;
+        }
         case 0x8000:
             //Multiple 0x8000 codes
             switch (opcode & 0x000F)
@@ -290,7 +303,7 @@ void Chip8::emulateCycle()
     }
 }
 
-void Chip8::traceLog(const char* message)
+void Chip8::traceLog(const char* message, unsigned short opcode)
 {
-    tracefile << message << std::endl;
+    tracefile << "0x" << std::hex << opcode << ": " << message << std::endl;
 }
