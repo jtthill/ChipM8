@@ -97,9 +97,11 @@ void Chip8::emulateCycle()
             {
                 case 0x00E0: //0x00E0
                     //TODO Clear the display
+                    std::cout << std::hex << opcode << ": Running 0x00E0, clearing display." << std::endl;
                     break;
                 case 0x00EE: //0x00EE
                     //TODO Return from a subroutine
+                    std::cout << std::hex << opcode << ": Running 0x00EE, return from subroutine." << std::endl;
                     //Set pc to the address at the top of the stack, then decrement sp
                     break;
                 default:
