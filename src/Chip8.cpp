@@ -115,6 +115,7 @@ void Chip8::emulateCycle()
         case 0x1000: //0x1nnn
         {
             //Jump to location nnn. Set pc to nnn
+            std::cout << std::hex << opcode << ": Running 0x1000, Jump to location." << std::endl;
             pc = (unsigned short) (opcode & 0x0FFF);
             break;
         }
@@ -122,6 +123,7 @@ void Chip8::emulateCycle()
         {
             //Call subroutine at nnn.
             //Increment sp, put current pc on stack, pc set to nnn
+            std::cout << std::hex << opcode << ": Running 0x2000, calling subroutine." << std::endl;
             stack[sp] = pc;
             sp++;
             pc = (unsigned short) (opcode & 0x0FFF);
@@ -130,6 +132,7 @@ void Chip8::emulateCycle()
         case 0x3000: //0x3xkk
         {
             //Skip next instruction if Vx == kk. If condition is true, increment pc by 2.
+            std::cout << std::hex << opcode << ": Running 0x3000, skip if equal." << std::endl;
             unsigned char kk = (unsigned char) (opcode & 0x00FF);
             if (V[opcode >> 8 & 0x0F] == kk)
                 pc += 2;
@@ -139,6 +142,7 @@ void Chip8::emulateCycle()
         case 0x4000: //0x4xkk
         {
             //Skip next instruction if Vx != kk. If condition is true, increment pc by 2.
+            std::cout << std::hex << opcode << ": Running 0x4000, skip if not equal." << std::endl;
             unsigned char kk = (unsigned char) (opcode & 0x00FF);
             if (V[opcode >> 8 & 0x0F] != kk)
                 pc += 2;
