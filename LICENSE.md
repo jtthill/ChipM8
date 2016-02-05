@@ -1,1 +1,1 @@
-LICENSE INFO M8
+Licensing info for later, if needed

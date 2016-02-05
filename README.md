@@ -1,4 +1,3 @@
-README FILE
-FOR CHIPM8
+Readme file for ChipM8, a Chip-8 emulator.
 
-M8
+Built in C++, based on a tutorial at LINK HERE
