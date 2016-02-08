@@ -4,7 +4,7 @@
 using namespace std;
 int main(int argc, char** argv)
 {
-	const char* filenameL= "/home/jtthill/Documents/Programming/ChipM8/tests/all_instructions";
+	const char* filenameL= "../tests/all_instructions";
 	Chip8 chip8;
 
     chip8.initialize();
