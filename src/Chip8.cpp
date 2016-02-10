@@ -56,6 +56,7 @@ void Chip8::loadGame(const char *filename)
 
     if (file)
     {
+        //TODO load directly into memory rather than into buffer?
         std::cout << "Reading ROM file into buffer." << std::endl;
         fread(buffer, sizeof(char), 4096 - 512, file);
         std::cout << "Loading from buffer into memory" << std::endl;
@@ -88,6 +89,9 @@ void Chip8::emulateCycle()
     //Decode the opcode
     //Using a large switch-case to find which opcode needs to be run
     //Once the proper opcode is found, it will execute the proper operations
+
+    //TODO Change switch case to an array of function pointers
+    //Easier to manage and is faster
 
     switch (opcode & 0xF000) //Only the first 4 bits are considered for most opcodes
     {

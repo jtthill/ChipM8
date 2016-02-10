@@ -20,6 +20,9 @@ public:
 // 0x000-0x1FF: Chip 8 interpreter
 // 0x050-0x0A0: Used for the font set (0-F)
 // 0x200-0xFFF: Program ROM and work RAM
+// TODO Change from unsigned primitive types to stdint.h types
+// unsigned char = uint8_t
+// unsigned short = uint16_t
     unsigned char memory[4096];
     unsigned short opcode;
     unsigned char V[16];
