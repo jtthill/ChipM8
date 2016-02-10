@@ -148,7 +148,7 @@ void Chip8::emulateCycle()
             //Skip next instruction if Vx != kk. If condition is true, increment pc by 2.
             std::cout << std::hex << opcode << ": Running 0x4xkk, skip if Vx != kk." << std::endl;
             unsigned char kk = (unsigned char) (opcode & 0x00FF);
-            if (V[opcode >> 8 & 0x0F] != kk)
+            if (V[(opcode & 0x0F00) >> 8] != kk)
                 pc += 2;
             pc += 2;
             break;
@@ -158,7 +158,7 @@ void Chip8::emulateCycle()
             //Skip next instruction if Vx == Vy.
             //Compares registers Vx and Vy, if they are equal, increment pc by 2.
             std::cout << std::hex << opcode << ": Running 0x5xy0, skip if Vx == Vy." << std::endl;
-            if (V[opcode >> 8 & 0x0F] == V[opcode >> 4 & 0x00F])
+            if (V[(opcode & 0x0F00) >> 8] == V[(opcode & 0x00F0) >> 4])
                 pc += 2;
             pc += 2;
             break;
@@ -168,15 +168,17 @@ void Chip8::emulateCycle()
             //Sets value kk into register Vx.
             std::cout << std::hex << opcode << ": Running 0x6xkk, set Vx = kk." << std::endl;
             unsigned char kk = (unsigned char) (opcode & 0x00FF);
-            V[opcode >> 8 & 0x0F] = kk;
+            V[(opcode & 0x0F00) >> 8] = kk;
+            pc += 2;
             break;
         }
         case 0x7000: //0x7xkk
         {
             //Set register Vx to Vx + kk
             std::cout << std::hex << opcode << ": Running 0x7xkk, add kk to Vx." << std::endl;
-            unsigned char kk = (unsigned char) (opcode & 0x00FF);
-            V[opcode >> 8 & 0x0F] += kk;
+            unsigned char kk = (unsigned char)(opcode & 0x00FF);
+            V[(opcode & 0x0F00) >> 8] += kk;
+            pc += 2;
             break;
         }
         case 0x8000:
@@ -186,18 +188,24 @@ void Chip8::emulateCycle()
                 case 0x0000: //0x8xy0
                     //Set register Vx to the value of Vy
                     std::cout << std::hex << opcode << ": Running 0x8xy0, set Vx = Vy." << std::endl;
+                    V[(opcode & 0x0F00) >> 8] = V[(opcode & 0x00F0) >> 4];
+                    pc += 2;
                     break;
                 case 0x0001: //0x8xy1
                     //Set register Vx to the value of Vx OR Vy
                     std::cout << std::hex << opcode << ": Running 0x8xy1, set Vx = Vx OR Vy." << std::endl;
+                    V[(opcode & 0x0F00) >> 8] = V[(opcode & 0x0F00) >> 8] | V[(opcode & 0x00F0) >> 4];
+                    pc += 2;
                     break;
                 case 0x0002: //0x8xy2
                     //Set register Vx to the value of Vx AND Vy
                     std::cout << std::hex << opcode << ": Running 0x8xy2, set Vx = Vx AND Vy." << std::endl;
+                    V[(opcode & 0x0F00) >> 8] = V[(opcode & 0x0F00) >> 8] & V[(opcode & 0x00F0) >> 4];
                     break;
                 case 0x0003: //0x8xy3
                     //Set register Vx to the value of Vx XOR Vy
                     std::cout << std::hex << opcode << ": Running 0x8xy3, set Vx = Vx XOR Vy." << std::endl;
+                    V[(opcode & 0x0F00) >> 8] = V[(opcode & 0x0F00) >> 8] | V[(opcode & 0x00F0) >> 4];
                     break;
                 case 0x0004: //0x8xy4
                     //Set register Vx to the value of Vx + Vy
