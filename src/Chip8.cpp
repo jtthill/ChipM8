@@ -50,7 +50,7 @@ void Chip8::initialize()
 
 void Chip8::loadGame(const char *filename)
 {
-    unsigned char buffer[4096 - 512];
+    uint8_t buffer[4096 - 512];
     FILE *file;
     file = fopen(filename, "r");
 
@@ -58,9 +58,9 @@ void Chip8::loadGame(const char *filename)
     {
         //TODO load directly into memory rather than into buffer?
         std::cout << "Reading ROM file into buffer." << std::endl;
-        fread(buffer, sizeof(char), 4096 - 512, file);
+        fread(buffer, sizeof(uint8_t), 4096 - 512, file);
         std::cout << "Loading from buffer into memory" << std::endl;
-        int bufferSize = sizeof(buffer) / sizeof(char);
+        int bufferSize = sizeof(buffer) / sizeof(uint8_t);
         for (int i = 0; i < bufferSize; i++)
         {
             memory[512 + i] = buffer[i];
@@ -120,7 +120,7 @@ void Chip8::emulateCycle()
         {
             //Jump to location nnn. Set pc to nnn
             std::cout << std::hex << opcode << ": Running 0x1nnn, Jump to location nnn." << std::endl;
-            pc = (unsigned short) (opcode & 0x0FFF);
+            pc = (uint16_t) (opcode & 0x0FFF);
             break;
         }
         case 0x2000: //0x2nnn
@@ -130,14 +130,14 @@ void Chip8::emulateCycle()
             std::cout << std::hex << opcode << ": Running 0x2nnn, calling subroutine at nnn." << std::endl;
             stack[sp] = pc;
             sp++;
-            pc = (unsigned short) (opcode & 0x0FFF);
+            pc = (uint16_t) (opcode & 0x0FFF);
             break;
         }
         case 0x3000: //0x3xkk
         {
             //Skip next instruction if Vx == kk. If condition is true, increment pc by 2.
             std::cout << std::hex << opcode << ": Running 0x3xkk, skip if Vx == kk." << std::endl;
-            unsigned char kk = (unsigned char) (opcode & 0x00FF);
+            uint8_t kk = (uint8_t) (opcode & 0x00FF);
             if (V[opcode >> 8 & 0x0F] == kk)
                 pc += 2;
             pc += 2;
@@ -147,7 +147,7 @@ void Chip8::emulateCycle()
         {
             //Skip next instruction if Vx != kk. If condition is true, increment pc by 2.
             std::cout << std::hex << opcode << ": Running 0x4xkk, skip if Vx != kk." << std::endl;
-            unsigned char kk = (unsigned char) (opcode & 0x00FF);
+            uint8_t kk = (uint8_t) (opcode & 0x00FF);
             if (V[(opcode & 0x0F00) >> 8] != kk)
                 pc += 2;
             pc += 2;
@@ -167,7 +167,7 @@ void Chip8::emulateCycle()
         {
             //Sets value kk into register Vx.
             std::cout << std::hex << opcode << ": Running 0x6xkk, set Vx = kk." << std::endl;
-            unsigned char kk = (unsigned char) (opcode & 0x00FF);
+            uint8_t kk = (uint8_t) (opcode & 0x00FF);
             V[(opcode & 0x0F00) >> 8] = kk;
             pc += 2;
             break;
@@ -176,7 +176,7 @@ void Chip8::emulateCycle()
         {
             //Set register Vx to Vx + kk
             std::cout << std::hex << opcode << ": Running 0x7xkk, add kk to Vx." << std::endl;
-            unsigned char kk = (unsigned char)(opcode & 0x00FF);
+            uint8_t kk = (uint8_t)(opcode & 0x00FF);
             V[(opcode & 0x0F00) >> 8] += kk;
             pc += 2;
             break;
@@ -349,7 +349,7 @@ void Chip8::emulateCycle()
     }
 }
 
-void Chip8::traceLog(const char* message, unsigned short opcode)
+void Chip8::traceLog(const char* message, uint16_t opcode)
 {
     tracefile << "0x" << std::hex << opcode << ": " << message << std::endl;
 }

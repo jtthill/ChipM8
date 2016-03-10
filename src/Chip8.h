@@ -4,6 +4,7 @@
 
 #include <string>
 #include <fstream>
+#include <stdint.h>
 
 
 class Chip8
@@ -20,20 +21,17 @@ public:
 // 0x000-0x1FF: Chip 8 interpreter
 // 0x050-0x0A0: Used for the font set (0-F)
 // 0x200-0xFFF: Program ROM and work RAM
-// TODO Change from unsigned primitive types to stdint.h types
-// unsigned char = uint8_t
-// unsigned short = uint16_t
-    unsigned char memory[4096];
-    unsigned short opcode;
-    unsigned char V[16];
-    unsigned short I;
-    unsigned short pc;
-    unsigned char gfx[64 * 32];
-    unsigned char delayTimer;
-    unsigned char soundTimer;
-    unsigned short stack[16];
-    unsigned short sp;
-    unsigned char key[16];
+    uint8_t memory[4096];
+    uint16_t opcode;
+    uint8_t V[16];
+    uint16_t I;
+    uint16_t pc;
+    uint8_t gfx[64 * 32];
+    uint8_t delayTimer;
+    uint8_t soundTimer;
+    uint16_t stack[16];
+    uint16_t sp;
+    uint8_t key[16];
 
 //////////////////////////////////////////////////
 // CPU methods and operations
@@ -42,7 +40,7 @@ public:
     void initialize();
     void emulateCycle();
     void loadGame(const char* filename);
-    void traceLog(const char* message, unsigned short opcode);
+    void traceLog(const char* message, uint16_t opcode);
 
 };
 
