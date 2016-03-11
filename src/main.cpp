@@ -4,7 +4,7 @@
 using namespace std;
 int main(int argc, char** argv)
 {
-	const char* filenameL= "../tests/all_instructions";
+	const char* filenameL= "tests/all_instructions";
 	char exit;
 	Chip8 chip8;
 
@@ -13,7 +13,7 @@ int main(int argc, char** argv)
     cout << hex << (int)chip8.memory[512] << endl;
     cout << hex << (int)chip8.memory[513] << endl;
     std::cout << std::hex << 2345 << ": Running 0x4000, skip if not equal." << std::endl;
-	cout << "Press anything to end program." << endl;
+	cout << "Press Ctrl+D to end program." << endl;
 	cin >> exit;
 	return 0;
 }
