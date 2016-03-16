@@ -1,7 +1,7 @@
+#include <GL\glut.h>
 #include <iostream>
 #include "Chip8.h"
 
-using namespace std;
 int main(int argc, char** argv)
 {
 	const char* filenameL= "tests/all_instructions";
@@ -10,10 +10,8 @@ int main(int argc, char** argv)
 
     chip8.initialize();
     chip8.loadGame(filenameL);
-    cout << hex << (int)chip8.memory[512] << endl;
-    cout << hex << (int)chip8.memory[513] << endl;
+    std::cout << std::hex << (int)chip8.memory[512] << std::endl;
+    std::cout << std::hex << (int)chip8.memory[513] << std::endl;
     std::cout << std::hex << 2345 << ": Running 0x4000, skip if not equal." << std::endl;
-	cout << "Press Ctrl+D to end program." << endl;
-	cin >> exit;
 	return 0;
 }
