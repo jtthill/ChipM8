@@ -4,16 +4,15 @@
 
 int main(int argc, char** argv)
 {
-	const char* filenameL= "tests/all_instructions";
-	char exit;
+	const char* filenameL= "C:\\Users\\Joe\\Documents\\Programming\\ChipM8\\tests\\all_instructions";
 	Chip8 chip8;
-
-	
 
     chip8.initialize();
     chip8.loadGame(filenameL);
-    std::cout << std::hex << (int)chip8.memory[512] << std::endl;
-    std::cout << std::hex << (int)chip8.memory[513] << std::endl;
-    std::cout << std::hex << 2345 << ": Running 0x4000, skip if not equal." << std::endl;
-	return 0;
+	while (!chip8.programEnd())
+	{
+		chip8.emulateCycle();
+	}
+
+	exit(EXIT_SUCCESS);
 }

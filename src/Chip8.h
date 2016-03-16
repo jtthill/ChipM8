@@ -9,6 +9,8 @@
 
 class Chip8
 {
+private:
+	int fileSize;
 public:
 
 //////////////////////////////////////////////////
@@ -38,6 +40,7 @@ public:
     void initialize();
     void emulateCycle();
     void loadGame(const char* filename);
+	bool programEnd();
 };
 
 
