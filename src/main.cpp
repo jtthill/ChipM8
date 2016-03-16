@@ -1,4 +1,4 @@
-#include <GL\glut.h>
+#include <GLFW\glfw3.h>
 #include <iostream>
 #include "Chip8.h"
 
@@ -7,6 +7,8 @@ int main(int argc, char** argv)
 	const char* filenameL= "tests/all_instructions";
 	char exit;
 	Chip8 chip8;
+
+	
 
     chip8.initialize();
     chip8.loadGame(filenameL);
