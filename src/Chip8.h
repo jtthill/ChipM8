@@ -9,8 +9,6 @@
 
 class Chip8
 {
-private:
-    std::ofstream tracefile;
 public:
 
 //////////////////////////////////////////////////
@@ -40,8 +38,6 @@ public:
     void initialize();
     void emulateCycle();
     void loadGame(const char* filename);
-    void traceLog(const char* message, uint16_t opcode);
-
 };
 
 
