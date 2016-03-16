@@ -46,6 +46,7 @@ void Chip8::loadGame(const char *filename)
 		fileSize = ftell(file);
 		rewind(file);
 		std::cout << fileSize << std::endl;
+
         //TODO load directly into memory rather than into buffer?
         std::cout << "Reading ROM file into buffer." << std::endl;
         fread(buffer, sizeof(uint8_t), 4096 - 512, file);
