@@ -40,15 +40,10 @@ int main(int argc, char** argv)
 	chip8.loadGame(filename);
 
 	//Setting up curses
-	win = screenSetup(&chip8);
+	win = debugSetup(&chip8);
+	debugUpdate(&chip8, win);
 	
-	/*
-	while (!chip8.programEnd())
-	{
-		chip8.emulateCycle();
-	}
-	*/
-	while (c = wgetch(win))
+	while ((c = wgetch(win)) && !chip8.programEnd())
 	{
 		switch (c)
 		{
@@ -57,6 +52,11 @@ int main(int argc, char** argv)
 			delwin(win);
 			exit(EXIT_SUCCESS);
 			break;
+		}
+		case 'n':
+		{
+			chip8.emulateCycle();
+			debugUpdate(&chip8, win);
 		}
 		default:
 			break;
