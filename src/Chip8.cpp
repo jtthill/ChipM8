@@ -29,17 +29,14 @@ void Chip8::initialize()
 
     delayTimer = 0;
     soundTimer = 0;
-
-   
 }
 
 void Chip8::loadGame(const char *filename)
 {
     uint8_t buffer[4096 - 512];
-    FILE *file;
-    file = fopen(filename, "r");
-	
-    if (file)
+	FILE* file;
+	int err = fopen_s(&file, filename, "r");
+	if (!err)
     {
 		//Finding size
 		fseek(file, 0L, SEEK_END);

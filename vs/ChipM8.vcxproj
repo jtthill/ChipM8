@@ -99,10 +99,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\src\Chip8.cpp" />
+    <ClCompile Include="..\src\Display.cpp" />
     <ClCompile Include="..\src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\Chip8.h" />
+    <ClInclude Include="..\src\Display.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
