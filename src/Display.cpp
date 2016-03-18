@@ -1,12 +1,45 @@
 #include "Display.h"
 
-
-WINDOW* debugSetup(Chip8* chip8)
+WINDOW* displaySetup(Chip8* chip8)
 {
-	initscr();
-	cbreak();
-	noecho();
+	WINDOW* win = newwin(0, 0, 0, 0);
+	int count = 0;
+	for (int col = 0; col < DISPLAY_WIDTH; col++)
+	{
+		for (int row = 0; row < DISPLAY_HEIGHT; row++)
+		{
+			wmove(win, row, col);
+			if (chip8->gfx[count] = 0)
+				waddch(win, '.');
+			else
+				waddch(win, '-');
+			count++;
+		}
+	}
+	wrefresh(win);
+	return win;
+}
 
+void renderDisplay(Chip8* chip8, WINDOW* win)
+{
+	int count = 0;
+	for (int col = 0; col < DISPLAY_WIDTH; col++)
+	{
+		for (int row = 0; row < DISPLAY_HEIGHT; row++)
+		{
+			wmove(win, row, col);
+			if (chip8->gfx[count] = 0)
+				waddch(win, '.');
+			else
+				waddch(win, '-');
+			count++;
+		}
+	}
+	wrefresh(win);
+}
+
+WINDOW* debugSetup()
+{
 	WINDOW* win = newwin(DEBUG_HEIGHT, DEBUG_WIDTH, 1, 1);
 	keypad(win, TRUE);
 	wmove(win, 0, 0);
@@ -29,7 +62,6 @@ WINDOW* debugSetup(Chip8* chip8)
 		wmove(win, i + 1, 0);
 		wprintw(win, "V%d: 00   %d: 0000", i, i);
 	}
-	wrefresh(win);
 	return win;
 }
 
@@ -42,7 +74,6 @@ void debugUpdate(Chip8* chip8, WINDOW* win)
 		wprintw(win, "%02x", chip8->V[i - 1]);
 		wmove(win, i, 14);
 		wprintw(win, "%04x", chip8->stack[i - 1]);
-		wrefresh(win);
 	}
 
 	//Then update I, PC, SP, and Opcode registers
@@ -61,5 +92,4 @@ void debugUpdate(Chip8* chip8, WINDOW* win)
 	//Opcode
 	wmove(win, 4, 26);
 	wprintw(win, "%04x", chip8->opcode);
-	wrefresh(win);
 }

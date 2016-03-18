@@ -231,7 +231,7 @@ void Chip8::emulateCycle()
 				{
 					//Set register Vx to the value of Vx XOR Vy
 					//std::cout << std::hex << opcode << ": Running 0x8xy3, set Vx = Vx XOR Vy." << std::endl;
-					V[(opcode & 0x0F00) >> 8] = V[(opcode & 0x0F00) >> 8] | V[(opcode & 0x00F0) >> 4];
+					V[(opcode & 0x0F00) >> 8] = V[(opcode & 0x0F00) >> 8] ^ V[(opcode & 0x00F0) >> 4];
 					pc += 2;
 					break;
 				}
@@ -387,6 +387,19 @@ void Chip8::emulateCycle()
 					//Wait for a key press, store the value of the key in Vx
 					//Halt all execution until that key is pressed
 					//std::cout << std::hex << opcode << ": Running 0xFx0A, wait for key press and store in Vx." << std::endl;
+					bool keyPressed = false;
+					for (int i = 0; i < 15; i++)
+					{
+						if (key[i] == 1)
+						{
+							V[(opcode & 0x0F00) >> 8] = i;
+							keyPressed = true;
+						}
+					}
+					//If the key isn't pressed, return from the cycle without advancing counter.
+					//This will repeat the instruction until a key is pressed
+					if (!keyPressed)
+						return;
 					pc += 2;
 					break;
 				}
@@ -472,7 +485,7 @@ void Chip8::emulateCycle()
             break;
     }
 
-    //Timers decrement by one every cycle when set to value above zero
+    //Timers decrement by one, 60 times every second when set to value above zero
     //If sound timer reaches zero, it plays a beep
     if (delayTimer > 0)
         delayTimer--;

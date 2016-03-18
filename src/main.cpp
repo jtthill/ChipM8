@@ -7,9 +7,9 @@
 int main(int argc, char** argv)
 {
 	Chip8 chip8;
-	bool debug = false;
+	bool debug = false; bool debugMenu = false;
 	char* filename = "C:\\Users\\Joe\\Documents\\Programming\\ChipM8\\ROMS\\PONG";
-	WINDOW* win;
+	WINDOW* regWin, *displayWin;
 	char c;
 
 	if (argc > 1)
@@ -39,27 +39,56 @@ int main(int argc, char** argv)
 	chip8.initialize();
 	chip8.loadGame(filename);
 
-	//Setting up curses
-	win = debugSetup(&chip8);
-	debugUpdate(&chip8, win);
-	
-	while ((c = wgetch(win)) && !chip8.programEnd())
+	//Checks the debug flag to see what display mode should be used
+	//If debug is used, display will be ncurses with register values
+	//Otherwise it will be displayed with GLFW and OpenGL
+	if (debug)
 	{
-		switch (c)
+		//Setup curses
+		initscr();
+		cbreak();
+		noecho();
+
+		//regWin = debugSetup();
+		//debugUpdate(&chip8, regWin);
+		displayWin = displaySetup(&chip8);
+		renderDisplay(&chip8, displayWin);
+
+		while ((c = wgetch(displayWin)) && !chip8.programEnd())
 		{
-		case 'q':
-		{
-			delwin(win);
-			exit(EXIT_SUCCESS);
-			break;
-		}
-		case 'n':
-		{
-			chip8.emulateCycle();
-			debugUpdate(&chip8, win);
-		}
-		default:
-			break;
+			switch (c)
+			{
+			case 'l':
+			{
+				//delwin(regWin);
+				delwin(displayWin);
+				exit(EXIT_SUCCESS);
+				break;
+			}
+			case 'n':
+			{
+				chip8.emulateCycle();
+				renderDisplay(&chip8, displayWin);
+				//debugUpdate(&chip8, regWin);
+				//if (debugMenu)
+					//wrefresh(regWin);
+			}
+			case 'm':
+			{
+				if (debugMenu)
+				{
+					debugMenu = false;
+					wrefresh(displayWin);
+				}
+				else
+				{
+					debugMenu = true;
+					//wrefresh(regWin);
+				}
+			}
+			default:
+				break;
+			}
 		}
 	}
 
