@@ -7,7 +7,7 @@ WINDOW* debugSetup(Chip8* chip8)
 	cbreak();
 	noecho();
 
-	WINDOW* win = newwin(HEIGHT, WIDTH, 1, 1);
+	WINDOW* win = newwin(DEBUG_HEIGHT, DEBUG_WIDTH, 1, 1);
 	keypad(win, TRUE);
 	wmove(win, 0, 0);
 	wprintw(win, "Regist:   Stack:");
@@ -47,19 +47,19 @@ void debugUpdate(Chip8* chip8, WINDOW* win)
 
 	//Then update I, PC, SP, and Opcode registers
 	//I
-	wmove(win, 2, 26);
+	wmove(win, 1, 26);
 	wprintw(win, "%04x", chip8->I);
 
 	//PC
-	wmove(win, 3, 26);
+	wmove(win, 2, 26);
 	wprintw(win, "%04x", chip8->pc);
 
 	//SP
-	wmove(win, 4, 26);
+	wmove(win, 3, 26);
 	wprintw(win, "%04x", chip8->sp);
 
 	//Opcode
-	wmove(win, 5, 26);
+	wmove(win, 4, 26);
 	wprintw(win, "%04x", chip8->opcode);
 	wrefresh(win);
 }

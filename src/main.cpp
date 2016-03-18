@@ -8,7 +8,7 @@ int main(int argc, char** argv)
 {
 	Chip8 chip8;
 	bool debug = false;
-	char* filename = "C:\\Users\\Joe\\Documents\\Programming\\ChipM8\\tests\\all_instructions";
+	char* filename = "C:\\Users\\Joe\\Documents\\Programming\\ChipM8\\ROMS\\PONG";
 	WINDOW* win;
 	char c;
 

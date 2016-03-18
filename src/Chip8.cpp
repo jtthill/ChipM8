@@ -46,13 +46,13 @@ void Chip8::loadGame(const char *filename)
 
         //TODO load directly into memory rather than into buffer?
         std::cout << "Reading ROM file into buffer." << std::endl;
-        fread(buffer, sizeof(uint8_t), 4096 - 512, file);
+        fread(memory + 512, sizeof(uint8_t), 4096 - 512, file);
         std::cout << "Loading from buffer into memory" << std::endl;
-        int bufferSize = sizeof(buffer) / sizeof(uint8_t);
-        for (int i = 0; i < bufferSize; i++)
-        {
-            memory[512 + i] = buffer[i];
-        }
+        //int bufferSize = sizeof(buffer) / sizeof(uint8_t);
+        //for (int i = 0; i < bufferSize; i++)
+        //{
+        //    memory[512 + i] = buffer[i];
+        //}
     }
     else
     {
@@ -88,16 +88,23 @@ void Chip8::emulateCycle()
             switch (opcode & 0x00FF)
             {
                 case 0x00E0: //0x00E0
-                    //TODO Clear the display
-                    //std::cout << std::hex << opcode << ": Running 0x00E0, clearing display." << std::endl;
+				{
+					//std::cout << std::hex << opcode << ": Running 0x00E0, clearing display." << std::endl;
+					for (int i = 0; i < (64 * 32); i++)
+					{
+						//Clearing pixel states
+						gfx[i] = 0;
+					}
 					pc += 2;
-                    break;
+					break;
+				}
                 case 0x00EE: //0x00EE
-                    //TODO Return from a subroutine
-                    //std::cout << std::hex << opcode << ": Running 0x00EE, return from subroutine." << std::endl;
-                    //Set pc to the address at the top of the stack, then decrement sp
-					pc += 2;
-                    break;
+				{
+					//std::cout << std::hex << opcode << ": Running 0x00EE, return from subroutine." << std::endl;
+					//Set pc to the address at the top of the stack, then decrement sp
+					pc = stack[--sp];
+					break;
+				}
                 default:
                 {
                     //std::cerr << "Opcode not recognized. Skipping..." << std::endl;
@@ -128,7 +135,7 @@ void Chip8::emulateCycle()
             //Skip next instruction if Vx == kk. If condition is true, increment pc by 2.
             //std::cout << std::hex << opcode << ": Running 0x3xkk, skip if Vx == kk." << std::endl;
             uint8_t kk = (uint8_t) (opcode & 0x00FF);
-            if (V[opcode >> 8 & 0x0F] == kk)
+            if (V[(opcode & 0x0F00) >> 8] == kk)
                 pc += 2;
             pc += 2;
             break;
@@ -176,41 +183,65 @@ void Chip8::emulateCycle()
             switch (opcode & 0x000F)
             {
                 case 0x0000: //0x8xy0
-                    //Set register Vx to the value of Vy
-                    //std::cout << std::hex << opcode << ": Running 0x8xy0, set Vx = Vy." << std::endl;
-                    V[(opcode & 0x0F00) >> 8] = V[(opcode & 0x00F0) >> 4];
-                    pc += 2;
-                    break;
+				{
+					//Set register Vx to the value of Vy
+					//std::cout << std::hex << opcode << ": Running 0x8xy0, set Vx = Vy." << std::endl;
+					V[(opcode & 0x0F00) >> 8] = V[(opcode & 0x00F0) >> 4];
+					pc += 2;
+					break;
+				}
                 case 0x0001: //0x8xy1
-                    //Set register Vx to the value of Vx OR Vy
-                    //std::cout << std::hex << opcode << ": Running 0x8xy1, set Vx = Vx OR Vy." << std::endl;
-                    V[(opcode & 0x0F00) >> 8] = V[(opcode & 0x0F00) >> 8] | V[(opcode & 0x00F0) >> 4];
-                    pc += 2;
-                    break;
+				{
+					//Set register Vx to the value of Vx OR Vy
+					//std::cout << std::hex << opcode << ": Running 0x8xy1, set Vx = Vx OR Vy." << std::endl;
+					V[(opcode & 0x0F00) >> 8] = V[(opcode & 0x0F00) >> 8] | V[(opcode & 0x00F0) >> 4];
+					pc += 2;
+					break;
+				}
                 case 0x0002: //0x8xy2
-                    //Set register Vx to the value of Vx AND Vy
-                    //std::cout << std::hex << opcode << ": Running 0x8xy2, set Vx = Vx AND Vy." << std::endl;
-                    V[(opcode & 0x0F00) >> 8] = V[(opcode & 0x0F00) >> 8] & V[(opcode & 0x00F0) >> 4];
+				{
+					//Set register Vx to the value of Vx AND Vy
+					//std::cout << std::hex << opcode << ": Running 0x8xy2, set Vx = Vx AND Vy." << std::endl;
+					V[(opcode & 0x0F00) >> 8] = V[(opcode & 0x0F00) >> 8] & V[(opcode & 0x00F0) >> 4];
 					pc += 2;
-                    break;
+					break;
+				}
                 case 0x0003: //0x8xy3
-                    //Set register Vx to the value of Vx XOR Vy
-                    //std::cout << std::hex << opcode << ": Running 0x8xy3, set Vx = Vx XOR Vy." << std::endl;
-                    V[(opcode & 0x0F00) >> 8] = V[(opcode & 0x0F00) >> 8] | V[(opcode & 0x00F0) >> 4];
+				{
+					//Set register Vx to the value of Vx XOR Vy
+					//std::cout << std::hex << opcode << ": Running 0x8xy3, set Vx = Vx XOR Vy." << std::endl;
+					V[(opcode & 0x0F00) >> 8] = V[(opcode & 0x0F00) >> 8] | V[(opcode & 0x00F0) >> 4];
 					pc += 2;
 					break;
+				}
                 case 0x0004: //0x8xy4
-                    //Set register Vx to the value of Vx + Vy
-                    //Set VF (carry) to 1 if the value is greater than 255, otherwise set to 0
-                    //std::cout << std::hex << opcode << ": Running 0x8xy4, set Vx = Vx + Vy." << std::endl;
+				{
+					//Set register Vx to the value of Vx + Vy
+					//Set VF (carry) to 1 if the value is greater than 255, otherwise set to 0
+					//std::cout << std::hex << opcode << ": Running 0x8xy4, set Vx = Vx + Vy." << std::endl;
+					uint16_t result = V[(opcode & 0x0F00) >> 8] + V[(opcode & 0x00F0) >> 4];
+					if (result > 255)
+						V[0xF] = 1;
+					else
+						V[0xF] = 0;
+					V[(opcode & 0x0F00) >> 8] = result;
 					pc += 2;
 					break;
+				}
                 case 0x0005: //0x8xy5
-                    //Set register Vx to the value of Vx - Vy
-                    //Set VF to 1 if Vx > Vy, otherwise set to 0
-                    //std::cout << std::hex << opcode << ": Running 0x8xy5, set Vx = Vx - Vy." << std::endl;
+				{
+					//Set register Vx to the value of Vx - Vy
+					//Set VF to 0 if Vy > Vx, otherwise set to 1
+					//std::cout << std::hex << opcode << ": Running 0x8xy5, set Vx = Vx - Vy." << std::endl;
+					uint16_t result = V[(opcode & 0x0F00) >> 8] - V[(opcode & 0x00F0) >> 4];
+					if (result < 0)
+						V[0xF] = 0;
+					else
+						V[0xF] = 1;
+					V[(opcode & 0x00F0) >> 4] = result;
 					pc += 2;
 					break;
+				}
                 case 0x0006: //0x8xy6
                     //If the least-significant bit of Vx is 1, then the VF is set to 1, otherwise 0
                     //Then Vx is right shifted by dividing by 2.
