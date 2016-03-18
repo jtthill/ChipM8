@@ -33,9 +33,8 @@ void Chip8::initialize()
 
 void Chip8::loadGame(const char *filename)
 {
-    uint8_t buffer[4096 - 512];
 	FILE* file;
-	int err = fopen_s(&file, filename, "r");
+	int err = fopen_s(&file, filename, "rb");
 	if (!err)
     {
 		//Finding size
@@ -45,14 +44,8 @@ void Chip8::loadGame(const char *filename)
 		std::cout << fileSize << std::endl;
 
         //TODO load directly into memory rather than into buffer?
-        std::cout << "Reading ROM file into buffer." << std::endl;
+        std::cout << "Reading ROM file into memory." << std::endl;
         fread(memory + 512, sizeof(uint8_t), 4096 - 512, file);
-        std::cout << "Loading from buffer into memory" << std::endl;
-        //int bufferSize = sizeof(buffer) / sizeof(uint8_t);
-        //for (int i = 0; i < bufferSize; i++)
-        //{
-        //    memory[512 + i] = buffer[i];
-        //}
     }
     else
     {
@@ -219,7 +212,7 @@ void Chip8::emulateCycle()
 					//Set register Vx to the value of Vx + Vy
 					//Set VF (carry) to 1 if the value is greater than 255, otherwise set to 0
 					//std::cout << std::hex << opcode << ": Running 0x8xy4, set Vx = Vx + Vy." << std::endl;
-					uint16_t result = V[(opcode & 0x0F00) >> 8] + V[(opcode & 0x00F0) >> 4];
+					uint8_t result = V[(opcode & 0x0F00) >> 8] + V[(opcode & 0x00F0) >> 4];
 					if (result > 255)
 						V[0xF] = 1;
 					else
@@ -233,7 +226,7 @@ void Chip8::emulateCycle()
 					//Set register Vx to the value of Vx - Vy
 					//Set VF to 0 if Vy > Vx, otherwise set to 1
 					//std::cout << std::hex << opcode << ": Running 0x8xy5, set Vx = Vx - Vy." << std::endl;
-					uint16_t result = V[(opcode & 0x0F00) >> 8] - V[(opcode & 0x00F0) >> 4];
+					uint8_t result = V[(opcode & 0x0F00) >> 8] - V[(opcode & 0x00F0) >> 4];
 					if (result < 0)
 						V[0xF] = 0;
 					else
