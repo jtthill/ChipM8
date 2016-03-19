@@ -8,7 +8,7 @@ int main(int argc, char** argv)
 {
 	Chip8 chip8;
 	bool debug = false; bool debugMenu = false;
-	char* filename = "C:\\Users\\Joe\\Documents\\Programming\\ChipM8\\ROMS\\PONG";
+	char* filename = "..\\..\\ROMS\\PONG";
 	WINDOW* regWin, *displayWin;
 	char c;
 
@@ -49,8 +49,6 @@ int main(int argc, char** argv)
 		cbreak();
 		noecho();
 
-		//regWin = debugSetup();
-		//debugUpdate(&chip8, regWin);
 		displayWin = displaySetup(&chip8);
 		renderDisplay(&chip8, displayWin);
 
@@ -60,7 +58,6 @@ int main(int argc, char** argv)
 			{
 			case 'l':
 			{
-				//delwin(regWin);
 				delwin(displayWin);
 				exit(EXIT_SUCCESS);
 				break;
@@ -69,9 +66,6 @@ int main(int argc, char** argv)
 			{
 				chip8.emulateCycle();
 				renderDisplay(&chip8, displayWin);
-				//debugUpdate(&chip8, regWin);
-				//if (debugMenu)
-					//wrefresh(regWin);
 			}
 			case 'm':
 			{
@@ -83,7 +77,6 @@ int main(int argc, char** argv)
 				else
 				{
 					debugMenu = true;
-					//wrefresh(regWin);
 				}
 			}
 			default:

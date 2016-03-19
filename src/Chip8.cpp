@@ -56,7 +56,7 @@ void Chip8::initialize()
     delayTimer = 0;
     soundTimer = 0;
 
-	srand(time(NULL));
+	srand((time_t)time(NULL));
 }
 
 void Chip8::loadGame(const char *filename)
