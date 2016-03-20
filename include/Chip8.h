@@ -5,6 +5,7 @@
 #include <string>
 #include <fstream>
 #include <stdint.h>
+#include <glfw3.h>
 
 
 class Chip8
@@ -31,7 +32,8 @@ public:
     uint8_t soundTimer;
     uint16_t stack[16];
     uint16_t sp;
-    uint8_t key[16];
+    uint8_t keyStates[16];
+	bool drawFlag;
 
 //////////////////////////////////////////////////
 // CPU methods and operations
@@ -41,6 +43,7 @@ public:
     void emulateCycle();
     void loadGame(const char* filename);
 	bool programEnd();
+	void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 };
 
 

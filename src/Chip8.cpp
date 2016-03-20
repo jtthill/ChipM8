@@ -1,6 +1,5 @@
 #include "Chip8.h"
 #include <iostream>
-#include <fstream>
 #include <time.h>
 
 void Chip8::initialize()
@@ -38,7 +37,7 @@ void Chip8::initialize()
         //Clearing V registers, stack, and key states
         V[i] = 0;
         stack[i] = 0;
-        key[i] = 0;
+        keyStates[i] = 0;
     }
     for (int i = 0; i < (64 * 32); i++)
     {
@@ -55,8 +54,9 @@ void Chip8::initialize()
 
     delayTimer = 0;
     soundTimer = 0;
+	drawFlag = true;
 
-	srand((time_t)time(NULL));
+	srand(time((time_t) NULL));
 }
 
 void Chip8::loadGame(const char *filename)
@@ -78,6 +78,7 @@ void Chip8::loadGame(const char *filename)
     else
     {
         std::cerr << "File couldn't be read." << std::endl;
+		exit(EXIT_FAILURE);
         //Other error thing?
     }
 }
@@ -337,6 +338,27 @@ void Chip8::emulateCycle()
 			//Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision
 			//Width of sprites are 8 bits
 			//std::cout << std::hex << opcode << ": Running 0xDxyn, display n-byte sprite" << std::endl;
+			uint16_t x = V[(opcode & 0x0F00) >> 8];
+			uint16_t y = V[(opcode & 0x00F0) >> 4];
+			uint16_t height = opcode & 0x000F;
+			uint16_t pixel;
+
+			V[0xF] = 0;
+			for (int yline = 0; yline < height; yline++)
+			{
+				pixel = memory[I + yline];
+				for (int xline = 0; xline < 8; xline++)
+				{
+					if ((pixel & (0x80 >> xline)) != 0)
+					{
+						if (gfx[(x + xline + ((y + yline) * 64))] == 1)
+							V[0xF] = 1;
+						gfx[x + xline + ((y + yline) * 64)] ^= 1;
+					}
+				}
+			}
+
+			drawFlag = true;
 			pc += 2;
 			break;
 		}
@@ -349,7 +371,7 @@ void Chip8::emulateCycle()
 					//Skip next instruction if key with value of Vx is pressed
 					//If key corresponding to Vx is currently down, pc is incremented by 2.
 					//std::cout << std::hex << opcode << ": Running 0xEx9E, skip if key Vx is pressed." << std::endl;
-					if (key[V[(opcode & 0x0F00) >> 8]])
+					if (keyStates[V[(opcode & 0x0F00) >> 8]])
 						pc += 2;
 					pc += 2;
 					break;
@@ -359,7 +381,7 @@ void Chip8::emulateCycle()
 					//Skip next instruction if key with value of Vx is not pressed
 					//If key corresponding to Vx is currently up, pc is incremented by 2.
 					//std::cout << std::hex << opcode << ": Running 0xExA1, skip if key Vx isn't pressed." << std::endl;
-					if (!key[V[(opcode & 0x0F00) >> 8]])
+					if (!keyStates[V[(opcode & 0x0F00) >> 8]])
 						pc += 2;
 					pc += 2;
 					break;
@@ -390,7 +412,7 @@ void Chip8::emulateCycle()
 					bool keyPressed = false;
 					for (int i = 0; i < 15; i++)
 					{
-						if (key[i] == 1)
+						if (keyStates[i] == 1)
 						{
 							V[(opcode & 0x0F00) >> 8] = i;
 							keyPressed = true;
@@ -433,6 +455,7 @@ void Chip8::emulateCycle()
 				{
 					//Set I = location of sprite for digit Vx
 					//std::cout << std::hex << opcode << ": Running 0xFx29, set I = location of sprite for digit Vx." << std::endl;
+					I = V[(opcode & 0x0F00) >> 8] * 0x5;
 					pc += 2;
 					break;
 				}
@@ -503,4 +526,74 @@ void Chip8::emulateCycle()
 bool Chip8::programEnd()
 {
 	return pc >= 0x200 + fileSize;
+}
+
+void Chip8::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+		glfwSetWindowShouldClose(window, GL_TRUE);
+	if (key == GLFW_KEY_1 && (action == GLFW_PRESS || action == GLFW_REPEAT))
+		this->keyStates[0x1] = 1;
+	if (key == GLFW_KEY_1 && action == GLFW_RELEASE)
+		this->keyStates[0x1] = 0;
+	if (key == GLFW_KEY_2 && (action == GLFW_PRESS || action == GLFW_REPEAT))
+		this->keyStates[0x2] = 1;
+	if (key == GLFW_KEY_2 && action == GLFW_RELEASE)
+		this->keyStates[0x2] = 0;
+	if (key == GLFW_KEY_3 && (action == GLFW_PRESS || action == GLFW_REPEAT))
+		this->keyStates[0x3] = 1;
+	if (key == GLFW_KEY_3 && action == GLFW_RELEASE)
+		this->keyStates[0x3] = 0;
+	if (key == GLFW_KEY_4 && (action == GLFW_PRESS || action == GLFW_REPEAT))
+		this->keyStates[0xC] = 1;
+	if (key == GLFW_KEY_4 && action == GLFW_RELEASE)
+		this->keyStates[0xC] = 0;
+	if (key == GLFW_KEY_Q && (action == GLFW_PRESS || action == GLFW_REPEAT))
+		this->keyStates[0x4] = 1;
+	if (key == GLFW_KEY_Q && action == GLFW_RELEASE)
+		this->keyStates[0x4] = 0;
+	if (key == GLFW_KEY_W && (action == GLFW_PRESS || action == GLFW_REPEAT))
+		this->keyStates[0x5] = 1;
+	if (key == GLFW_KEY_W && action == GLFW_RELEASE)
+		this->keyStates[0x5] = 0;
+	if (key == GLFW_KEY_E && (action == GLFW_PRESS || action == GLFW_REPEAT))
+		this->keyStates[0x6] = 1;
+	if (key == GLFW_KEY_E && action == GLFW_RELEASE)
+		this->keyStates[0x6] = 0;
+	if (key == GLFW_KEY_R && (action == GLFW_PRESS || action == GLFW_REPEAT))
+		this->keyStates[0xD] = 1;
+	if (key == GLFW_KEY_R && action == GLFW_RELEASE)
+		this->keyStates[0xD] = 0;
+	if (key == GLFW_KEY_A && (action == GLFW_PRESS || action == GLFW_REPEAT))
+		this->keyStates[0x7] = 1;
+	if (key == GLFW_KEY_A && action == GLFW_RELEASE)
+		this->keyStates[0x7] = 0;
+	if (key == GLFW_KEY_S && (action == GLFW_PRESS || action == GLFW_REPEAT))
+		this->keyStates[0x8] = 1;
+	if (key == GLFW_KEY_S && action == GLFW_RELEASE)
+		this->keyStates[0x8] = 0;
+	if (key == GLFW_KEY_D && (action == GLFW_PRESS || action == GLFW_REPEAT))
+		this->keyStates[0x9] = 1;
+	if (key == GLFW_KEY_D && action == GLFW_RELEASE)
+		this->keyStates[0x9] = 0;
+	if (key == GLFW_KEY_F && (action == GLFW_PRESS || action == GLFW_REPEAT))
+		this->keyStates[0xE] = 1;
+	if (key == GLFW_KEY_F && action == GLFW_RELEASE)
+		this->keyStates[0xE] = 0;
+	if (key == GLFW_KEY_Z && (action == GLFW_PRESS || action == GLFW_REPEAT))
+		this->keyStates[0xA] = 1;
+	if (key == GLFW_KEY_Z && action == GLFW_RELEASE)
+		this->keyStates[0xA] = 0;
+	if (key == GLFW_KEY_X && (action == GLFW_PRESS || action == GLFW_REPEAT))
+		this->keyStates[0x0] = 1;
+	if (key == GLFW_KEY_X && action == GLFW_RELEASE)
+		this->keyStates[0x0] = 0;
+	if (key == GLFW_KEY_C && (action == GLFW_PRESS || action == GLFW_REPEAT))
+		this->keyStates[0xB] = 1;
+	if (key == GLFW_KEY_C && action == GLFW_RELEASE)
+		this->keyStates[0xB] = 0;
+	if (key == GLFW_KEY_V && (action == GLFW_PRESS || action == GLFW_REPEAT))
+		this->keyStates[0xF] = 1;
+	if (key == GLFW_KEY_V && action == GLFW_RELEASE)
+		this->keyStates[0xF] = 0;
 }

@@ -26,10 +26,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\Chip8.h">
+    <ClInclude Include="..\include\Chip8.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\Display.h">
+    <ClInclude Include="..\include\Display.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

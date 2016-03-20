@@ -1,5 +1,48 @@
 #include "Display.h"
 
+
+GLFWwindow* setupWindow(Chip8* chip8)
+{
+	if (!glfwInit())
+	{
+		//Failed GLFW initialization
+		exit(EXIT_FAILURE);
+	}
+
+	GLFWwindow* window = glfwCreateWindow(DISPLAY_WIDTH * DISPLAY_SCALE, DISPLAY_HEIGHT * DISPLAY_SCALE, "ChipM8", NULL, NULL);
+	if (!window)
+	{
+		//Failure to create window
+		glfwTerminate();
+		exit(EXIT_FAILURE);
+	}
+	
+	glfwMakeContextCurrent(window);
+	glfwSwapInterval(1);
+	glfwSetErrorCallback(error_callback);
+	glfwSetKeyCallback(window, key_callback);
+	return window;
+}
+
+void error_callback(int error, const char* description)
+{
+	fputs(description, stderr);
+}
+
+static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	static Chip8 chip8;
+	chip8.keyCallback(window, key, scancode, action, mods);
+}
+
+
+
+
+
+//////////////////////////////////////////////////////
+//Debug display
+//////////////////////////////////////////////////////
+
 WINDOW* displaySetup(Chip8* chip8)
 {
 	WINDOW* win = newwin(0, 0, 0, 0);
@@ -38,9 +81,9 @@ void renderDisplay(Chip8* chip8, WINDOW* win)
 	wrefresh(win);
 }
 
-WINDOW* debugSetup()
+WINDOW* debugSetup(WINDOW* orig)
 {
-	WINDOW* win = newwin(DEBUG_HEIGHT, DEBUG_WIDTH, 1, 1);
+	WINDOW* win = derwin(orig, DEBUG_HEIGHT, DEBUG_WIDTH, 0, 0);
 	keypad(win, TRUE);
 	wmove(win, 0, 0);
 	wprintw(win, "Regist:   Stack:");
@@ -62,6 +105,7 @@ WINDOW* debugSetup()
 		wmove(win, i + 1, 0);
 		wprintw(win, "V%d: 00   %d: 0000", i, i);
 	}
+	wrefresh(win);
 	return win;
 }
 
@@ -92,4 +136,6 @@ void debugUpdate(Chip8* chip8, WINDOW* win)
 	//Opcode
 	wmove(win, 4, 26);
 	wprintw(win, "%04x", chip8->opcode);
+
+	wrefresh(win);
 }

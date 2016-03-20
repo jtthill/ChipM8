@@ -115,8 +115,8 @@
     <ClCompile Include="..\src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\Chip8.h" />
-    <ClInclude Include="..\src\Display.h" />
+    <ClInclude Include="..\include\Chip8.h" />
+    <ClInclude Include="..\include\Display.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
