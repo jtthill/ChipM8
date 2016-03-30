@@ -11,8 +11,14 @@
 #define DISPLAY_HEIGHT 32
 #define DISPLAY_SCALE 10
 
+
+uint8_t screenData[DISPLAY_HEIGHT][DISPLAY_WIDTH][3];
+
 //GLFW display functions
 GLFWwindow* setupWindow(Chip8* chip8);
+void createTexture();
+void updateTexture(Chip8* chip8);
+void display(Chip8* chip8);
 
 
 //GLFW callback functions

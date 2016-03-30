@@ -106,8 +106,9 @@ int main(int argc, char** argv)
 		display = setupWindow(&chip8);
 		int width = DISPLAY_WIDTH * DISPLAY_SCALE; 
 		int height = DISPLAY_HEIGHT * DISPLAY_SCALE;
+		createTexture();
 
-		while (!glfwWindowShouldClose(display))
+		while (!glfwWindowShouldClose(display)) //Change to proper timing
 		{
 			glfwGetFramebufferSize(display, &width, &height);
 			glViewport(0, 0, width, height);
@@ -115,6 +116,7 @@ int main(int argc, char** argv)
 			if (chip8.drawFlag)
 			{
 				//draw shit
+				//display(&chip8);
 				glfwSwapBuffers(display);
 			}
 			glfwPollEvents();
