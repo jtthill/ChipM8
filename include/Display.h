@@ -1,7 +1,6 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
-
 #include "Chip8.h"
 #include <curses.h>
 #include <SDL.h>
@@ -15,6 +14,8 @@
 
 //Replacing all GLFW with SDL
 bool createSDL();
+void initGL();
+void render(Chip8* chip8);
 
 
 //Debug display functions

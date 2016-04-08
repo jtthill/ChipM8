@@ -39,11 +39,17 @@ void Chip8::initialize()
         stack[i] = 0;
         keyStates[i] = 0;
     }
-    for (int i = 0; i < (64 * 32); i++)
-    {
-        //Clearing pixel states
-        gfx[i] = 0;
-    }
+
+	//Clearing screen
+	for (int x = 0; x < 640; x++)
+	{
+		for (int y = 0; y < 320; y++)
+		{
+			screenData[y][x][0] = 0;
+			screenData[y][x][1] = 0;
+			screenData[y][x][2] = 0;
+		}
+	}
 
 	for (int i = 0; i < 80; i++)
 	{
@@ -112,10 +118,14 @@ void Chip8::emulateCycle()
                 case 0x00E0: //0x00E0
 				{
 					//std::cout << std::hex << opcode << ": Running 0x00E0, clearing display." << std::endl;
-					for (int i = 0; i < (64 * 32); i++)
+					for (int x = 0; x < 640; x++)
 					{
-						//Clearing pixel states
-						gfx[i] = 0;
+						for (int y = 0; y < 320; y++)
+						{
+							screenData[y][x][0] = 0;
+							screenData[y][x][1] = 0;
+							screenData[y][x][2] = 0;
+						}
 					}
 					pc += 2;
 					break;
@@ -329,8 +339,9 @@ void Chip8::emulateCycle()
 		{
 			//Set register Vx to the value of a random number 0 <= num <= 255 plus kk
 			//std::cout << std::hex << opcode << ": Running 0xCxkk, set Vx = random number + kk." << std::endl;
-			uint8_t val = rand() % 256;
-			V[(opcode & 0x0F00) >> 8] = val + (opcode & 0x00FF);
+			int kk = opcode & 0x00FF;
+			uint8_t val = rand() % kk;
+			V[(opcode & 0x0F00) >> 8] = val;
 			pc += 2;
 			break;
 		}
@@ -339,28 +350,49 @@ void Chip8::emulateCycle()
 			//Display n-byte sprite starting at memory location I at (Vx, Vy), set VF = collision
 			//Width of sprites are 8 bits
 			//std::cout << std::hex << opcode << ": Running 0xDxyn, display n-byte sprite" << std::endl;
-			uint16_t x = V[(opcode & 0x0F00) >> 8];
-			uint16_t y = V[(opcode & 0x00F0) >> 4];
+			const int SCALE = 10;
+			uint16_t regx = (opcode & 0x0F00) >> 8;
+			uint16_t regy = (opcode & 0x00F0) >> 4;
 			uint16_t height = opcode & 0x000F;
-			uint16_t pixel;
+			
+			int coordx = V[regx] * SCALE;
+			int coordy = V[regy] * SCALE;
 
 			V[0xF] = 0;
 			for (int yline = 0; yline < height; yline++)
 			{
-				pixel = memory[I + yline];
-				for (int xline = 0; xline < 8; xline++)
+				uint8_t data = memory[I + yline];
+
+				int xpixel = 0;
+				int xpixelinv = 7;
+				for (xpixel = 0; xpixel < 8; xpixel++, xpixelinv--)
 				{
-					if ((pixel & (0x80 >> xline)) != 0)
+					int mask = 1 << xpixelinv;
+					if (data & mask)
 					{
-						if (gfx[(x + xline + ((y + yline) * 64))] == 1)
+						int x = (xpixel * SCALE) + coordx;
+						int y = coordy + (yline * SCALE);
+
+						int color = 255;
+
+						if (screenData[y][x][0] == 255)
 						{
+							color = 0;
 							V[0xF] = 1;
 						}
-						gfx[x + xline + ((y + yline) * 64)] ^= 1;
+
+						for (int i = 0; i < SCALE; i++)
+						{
+							for (int j = 0; j < SCALE; j++)
+							{
+								screenData[y + i][x + j][0] = color;
+								screenData[y + i][x + j][1] = color;
+								screenData[y + i][x + j][2] = color;
+							}
+						}
 					}
 				}
 			}
-
 			drawFlag = true;
 			pc += 2;
 			break;
@@ -374,7 +406,7 @@ void Chip8::emulateCycle()
 					//Skip next instruction if key with value of Vx is pressed
 					//If key corresponding to Vx is currently down, pc is incremented by 2.
 					//std::cout << std::hex << opcode << ": Running 0xEx9E, skip if key Vx is pressed." << std::endl;
-					if (keyStates[V[(opcode & 0x0F00) >> 8]])
+					if (keyStates[V[(opcode & 0x0F00) >> 8]] == 1)
 						pc += 2;
 					pc += 2;
 					break;
@@ -384,7 +416,7 @@ void Chip8::emulateCycle()
 					//Skip next instruction if key with value of Vx is not pressed
 					//If key corresponding to Vx is currently up, pc is incremented by 2.
 					//std::cout << std::hex << opcode << ": Running 0xExA1, skip if key Vx isn't pressed." << std::endl;
-					if (!keyStates[V[(opcode & 0x0F00) >> 8]])
+					if (keyStates[V[(opcode & 0x0F00) >> 8]] == 0)
 						pc += 2;
 					pc += 2;
 					break;

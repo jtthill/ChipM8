@@ -5,7 +5,65 @@
 #include <SDL.h>
 #include <SDL_opengl.h>
 
-
+void handleInput(Chip8* chip8, SDL_Event* event)
+{
+	if (event->type == SDL_KEYDOWN)
+	{
+		int key = -1;
+		switch (event->key.keysym.sym)
+		{
+			case SDLK_x: key = 0; break;
+			case SDLK_1: key = 1; break;
+			case SDLK_2: key = 2; break;
+			case SDLK_3: key = 3; break;
+			case SDLK_q: key = 4; break;
+			case SDLK_w: key = 5; break;
+			case SDLK_e: key = 6; break;
+			case SDLK_a: key = 7; break;
+			case SDLK_s: key = 8; break;
+			case SDLK_d: key = 9; break;
+			case SDLK_z: key = 10; break;
+			case SDLK_c: key = 11; break;
+			case SDLK_4: key = 12; break;
+			case SDLK_r: key = 13; break;
+			case SDLK_f: key = 14; break;
+			case SDLK_v: key = 15; break;
+			default: break;
+		}
+		if (key != -1)
+		{
+			chip8->keyPressed(key);
+		}
+	}
+	else if (event->type == SDL_KEYUP)
+	{
+		int key = -1;
+		switch (event->key.keysym.sym)
+		{
+			case SDLK_x: key = 0; break;
+			case SDLK_1: key = 1; break;
+			case SDLK_2: key = 2; break;
+			case SDLK_3: key = 3; break;
+			case SDLK_q: key = 4; break;
+			case SDLK_w: key = 5; break;
+			case SDLK_e: key = 6; break;
+			case SDLK_a: key = 7; break;
+			case SDLK_s: key = 8; break;
+			case SDLK_d: key = 9; break;
+			case SDLK_z: key = 10; break;
+			case SDLK_c: key = 11; break;
+			case SDLK_4: key = 12; break;
+			case SDLK_r: key = 13; break;
+			case SDLK_f: key = 14; break;
+			case SDLK_v: key = 15; break;
+			default: break;
+		}
+		if (key != -1)
+		{
+			chip8->keyReleased(key);
+		}
+	}
+}
 
 int main(int argc, char** argv)
 {
@@ -15,8 +73,7 @@ int main(int argc, char** argv)
 	WINDOW* debugDisplay;
 	char c;
 	int opcodesPerSecond;
-	int fps = 60;
-	int quit = 0;
+
 
 	if (argc > 1)
 	{
@@ -99,9 +156,43 @@ int main(int argc, char** argv)
 	{
 		//Set up display
 		SDL_Event event;
-
 		
-	}
+		if (!createSDL())
+			exit(EXIT_FAILURE);
+		
+		int fps = 60;
+		int numframe = opcodesPerSecond / fps;
 
+		bool quit = false;
+		float interval = 1000;
+		interval /= fps;
+
+		unsigned int time2 = SDL_GetTicks();
+
+		while (!quit)
+		{
+			while (SDL_PollEvent(&event))
+			{
+				handleInput(&chip8, &event);
+				if (event.type == SDL_QUIT)
+				{
+					quit = true;
+				}
+			}
+
+			unsigned int current = SDL_GetTicks();
+
+			if ((time2 + interval) < current)
+			{
+				chip8.decreaseTimers();
+				for (int i = 0; i < numframe; i++)
+					chip8.emulateCycle();
+
+				time2 = current;
+				render(&chip8);
+			}
+		}
+	}
+	SDL_Quit();
 	exit(EXIT_SUCCESS);
 }

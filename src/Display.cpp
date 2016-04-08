@@ -2,13 +2,47 @@
 
 bool createSDL()
 {
-	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
+	if (SDL_Init(SDL_INIT_EVERYTHING))
 	{
 		return false;
 	}
-	
+	if (SDL_SetVideoMode(DISPLAY_WIDTH, DISPLAY_HEIGHT, 8, SDL_OPENGL) == NULL)
+	{
+		return false;
+	}
+
+	initGL();
+	SDL_WM_SetCaption("ChipM8", NULL);
+	return true;
 }
 
+void initGL()
+{
+	glViewport(0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT);
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
+	glOrtho(0, DISPLAY_WIDTH, DISPLAY_HEIGHT, 0, -1.0, 1.0);
+	glClearColor(0, 0, 0, 1.0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glShadeModel(GL_FLAT);
+
+	glEnable(GL_TEXTURE_2D);
+	glDisable(GL_DEPTH_TEST);
+	glDisable(GL_CULL_FACE);
+	glDisable(GL_DITHER);
+	glDisable(GL_BLEND);
+}
+
+void render(Chip8* chip8)
+{
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glLoadIdentity();
+	glRasterPos2i(-1, 1);
+	glPixelZoom(1, -1);
+	glDrawPixels(DISPLAY_WIDTH, DISPLAY_HEIGHT, GL_RGB, GL_UNSIGNED_BYTE, chip8->screenData);
+	SDL_GL_SwapBuffers();
+	glFlush();
+}
 
 //////////////////////////////////////////////////////
 //Debug display
