@@ -532,72 +532,12 @@ bool Chip8::programEnd()
 	return pc >= 0x200 + fileSize;
 }
 
-void Chip8::keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+void Chip8::keyPressed(int key)
 {
-	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, GL_TRUE);
-	if (key == GLFW_KEY_1 && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		this->keyStates[0x1] = 1;
-	if (key == GLFW_KEY_1 && action == GLFW_RELEASE)
-		this->keyStates[0x1] = 0;
-	if (key == GLFW_KEY_2 && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		this->keyStates[0x2] = 1;
-	if (key == GLFW_KEY_2 && action == GLFW_RELEASE)
-		this->keyStates[0x2] = 0;
-	if (key == GLFW_KEY_3 && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		this->keyStates[0x3] = 1;
-	if (key == GLFW_KEY_3 && action == GLFW_RELEASE)
-		this->keyStates[0x3] = 0;
-	if (key == GLFW_KEY_4 && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		this->keyStates[0xC] = 1;
-	if (key == GLFW_KEY_4 && action == GLFW_RELEASE)
-		this->keyStates[0xC] = 0;
-	if (key == GLFW_KEY_Q && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		this->keyStates[0x4] = 1;
-	if (key == GLFW_KEY_Q && action == GLFW_RELEASE)
-		this->keyStates[0x4] = 0;
-	if (key == GLFW_KEY_W && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		this->keyStates[0x5] = 1;
-	if (key == GLFW_KEY_W && action == GLFW_RELEASE)
-		this->keyStates[0x5] = 0;
-	if (key == GLFW_KEY_E && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		this->keyStates[0x6] = 1;
-	if (key == GLFW_KEY_E && action == GLFW_RELEASE)
-		this->keyStates[0x6] = 0;
-	if (key == GLFW_KEY_R && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		this->keyStates[0xD] = 1;
-	if (key == GLFW_KEY_R && action == GLFW_RELEASE)
-		this->keyStates[0xD] = 0;
-	if (key == GLFW_KEY_A && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		this->keyStates[0x7] = 1;
-	if (key == GLFW_KEY_A && action == GLFW_RELEASE)
-		this->keyStates[0x7] = 0;
-	if (key == GLFW_KEY_S && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		this->keyStates[0x8] = 1;
-	if (key == GLFW_KEY_S && action == GLFW_RELEASE)
-		this->keyStates[0x8] = 0;
-	if (key == GLFW_KEY_D && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		this->keyStates[0x9] = 1;
-	if (key == GLFW_KEY_D && action == GLFW_RELEASE)
-		this->keyStates[0x9] = 0;
-	if (key == GLFW_KEY_F && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		this->keyStates[0xE] = 1;
-	if (key == GLFW_KEY_F && action == GLFW_RELEASE)
-		this->keyStates[0xE] = 0;
-	if (key == GLFW_KEY_Z && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		this->keyStates[0xA] = 1;
-	if (key == GLFW_KEY_Z && action == GLFW_RELEASE)
-		this->keyStates[0xA] = 0;
-	if (key == GLFW_KEY_X && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		this->keyStates[0x0] = 1;
-	if (key == GLFW_KEY_X && action == GLFW_RELEASE)
-		this->keyStates[0x0] = 0;
-	if (key == GLFW_KEY_C && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		this->keyStates[0xB] = 1;
-	if (key == GLFW_KEY_C && action == GLFW_RELEASE)
-		this->keyStates[0xB] = 0;
-	if (key == GLFW_KEY_V && (action == GLFW_PRESS || action == GLFW_REPEAT))
-		this->keyStates[0xF] = 1;
-	if (key == GLFW_KEY_V && action == GLFW_RELEASE)
-		this->keyStates[0xF] = 0;
+	this->keyStates[key] = 1;
+}
+
+void Chip8::keyReleased(int key)
+{
+	this->keyStates[key] = 0;
 }

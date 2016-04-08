@@ -5,7 +5,6 @@
 #include <string>
 #include <fstream>
 #include <stdint.h>
-#include <glfw3.h>
 
 
 class Chip8
@@ -44,7 +43,8 @@ public:
     void loadGame(const char* filename);
 	void decreaseTimers();
 	bool programEnd();
-	void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+	void keyPressed(int key);
+	void keyReleased(int key);
 };
 
 

@@ -1,98 +1,13 @@
 #include "Display.h"
 
-uint8_t screenData[DISPLAY_HEIGHT][DISPLAY_WIDTH][3];
-
-GLFWwindow* setupWindow(Chip8* chip8)
+bool createSDL()
 {
-	if (!glfwInit())
+	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
 	{
-		//Failed GLFW initialization
-		exit(EXIT_FAILURE);
-	}
-
-	GLFWwindow* window = glfwCreateWindow(DISPLAY_WIDTH * DISPLAY_SCALE, DISPLAY_HEIGHT * DISPLAY_SCALE, "ChipM8", NULL, NULL);
-	if (!window)
-	{
-		//Failure to create window
-		glfwTerminate();
-		exit(EXIT_FAILURE);
+		return false;
 	}
 	
-	glfwMakeContextCurrent(window);
-	glfwSwapInterval(1);
-	glfwSetErrorCallback(error_callback);
-	glfwSetKeyCallback(window, key_callback);
-	return window;
 }
-
-void createTexture()
-{
-	// Clear screen data
-	for (int y = 0; y < DISPLAY_HEIGHT; y++)
-	{
-		for (int x = 0; x < DISPLAY_WIDTH; x++)
-		{
-			screenData[y][x][2] = screenData[y][x][1] = screenData[y][x][0] = 0;
-		}
-	}
-
-	// Creating texture
-	glTexImage2D(GL_TEXTURE_2D, 0, 3, DISPLAY_WIDTH, DISPLAY_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid *)screenData);
-
-	// Set up texture
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
-
-	glEnable(GL_TEXTURE_2D);
-}
-
-void updateTexture(Chip8* chip8)
-{
-	for (int y = 0; y < 32; y++)
-	{
-		for (int x = 0; x < 64; x++)
-		{
-			if(chip8->gfx[(y * 64) + x] == 0)
-				screenData[y][x][2] = screenData[y][x][1] = screenData[y][x][0] = 0; //Off
-			else
-				screenData[y][x][2] = screenData[y][x][1] = screenData[y][x][0] = 255; //On
-		}
-	}
-
-	// Update texture
-	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, DISPLAY_WIDTH, DISPLAY_HEIGHT, GL_RGB, GL_UNSIGNED_BYTE, (GLvoid *)screenData);
-
-	glBegin(GL_QUADS);
-
-	glTexCoord2d(0.0, 0.0);		glVertex2d(0.0, 0.0);
-	glTexCoord2d(1.0, 0.0);		glTexCoord2d(DISPLAY_WIDTH * DISPLAY_SCALE, 0.0);
-	glTexCoord2d(1.0, 1.0);		glTexCoord2d(DISPLAY_WIDTH * DISPLAY_SCALE, DISPLAY_HEIGHT * DISPLAY_SCALE);
-	glTexCoord2d(0.0, 1.0);		glTexCoord2d(0.0, DISPLAY_HEIGHT * DISPLAY_SCALE);
-
-	glEnd();
-}
-
-void render(Chip8* chip8)
-{
-	glClear(GL_COLOR_BUFFER_BIT);
-	updateTexture(chip8);
-}
-
-void error_callback(int error, const char* description)
-{
-	fputs(description, stderr);
-}
-
-static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
-{
-	static Chip8 chip8;
-	chip8.keyCallback(window, key, scancode, action, mods);
-}
-
-
-
 
 
 //////////////////////////////////////////////////////

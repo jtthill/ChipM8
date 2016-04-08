@@ -1,17 +1,18 @@
-#include <glfw3.h>
 #include <iostream>
 #include <string>
 #include "Chip8.h"
 #include "Display.h"
+#include <SDL.h>
+#include <SDL_opengl.h>
+
 
 
 int main(int argc, char** argv)
 {
 	Chip8 chip8;
-	bool debug = false; bool debugMenu = false;
-	char* filename = "..\\..\\ROMS\\PONG";
+	bool debug = false;
+	char* filename;
 	WINDOW* debugDisplay;
-	GLFWwindow* display;
 	char c;
 	int opcodesPerSecond;
 	int fps = 60;
@@ -47,7 +48,7 @@ int main(int argc, char** argv)
 
 	//Checks the debug flag to see what display mode should be used
 	//If debug is used, display will be ncurses with register values
-	//Otherwise it will be displayed with GLFW and OpenGL
+	//Otherwise it will be displayed with SDL and OpenGL
 
 	std::cout << "Debug? (y/n)" << std::endl;
 	std::string in;
@@ -94,44 +95,12 @@ int main(int argc, char** argv)
 			}
 		}
 	}
-	else //Using GLFW
+	else //Using SDL
 	{
 		//Set up display
-		display = setupWindow(&chip8);
-		int width = DISPLAY_WIDTH * DISPLAY_SCALE; 
-		int height = DISPLAY_HEIGHT * DISPLAY_SCALE;
-		createTexture();
+		SDL_Event event;
 
-		//Set up timing
-		int numFrame = opcodesPerSecond / fps;
-		double interval = 1000;
-		interval /= fps;
-		double timeNow = glfwGetTime() * 1000; //In milliseconds
-		double lastFrame = glfwGetTime() * 1000;
-
-		while (!quit) //Change to proper timing
-		{
-			glfwGetFramebufferSize(display, &width, &height);
-			glViewport(0, 0, width, height);
-			glfwPollEvents();
-			quit = glfwWindowShouldClose(display);
-
-			timeNow = glfwGetTime() * 1000;
-			if ((lastFrame + interval) < timeNow)
-			{
-				chip8.emulateCycle();
-				//if (chip8.drawFlag)
-				//{
-					//draw
-					render(&chip8);
-					glfwSwapBuffers(display);
-				//}
-
-				timeNow = glfwGetTime() * 1000;
-			}
-		}
-		glfwDestroyWindow(display);
-		glfwTerminate();
+		
 	}
 
 	exit(EXIT_SUCCESS);
