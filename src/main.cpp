@@ -10,9 +10,12 @@ int main(int argc, char** argv)
 	Chip8 chip8;
 	bool debug = false; bool debugMenu = false;
 	char* filename = "..\\..\\ROMS\\PONG";
-	WINDOW* regWin, *debugDisplay;
+	WINDOW* debugDisplay;
 	GLFWwindow* display;
 	char c;
+	int opcodesPerSecond;
+	int fps = 60;
+	int quit = 0;
 
 	if (argc > 1)
 	{
@@ -40,10 +43,25 @@ int main(int argc, char** argv)
 	//Initialize Chip8 core
 	chip8.initialize();
 	chip8.loadGame(filename);
+	opcodesPerSecond = 500; //TODO: Change to read from a file or something
 
 	//Checks the debug flag to see what display mode should be used
 	//If debug is used, display will be ncurses with register values
 	//Otherwise it will be displayed with GLFW and OpenGL
+
+	std::cout << "Debug? (y/n)" << std::endl;
+	std::string in;
+	std::cin >> in;
+	if (in.compare("y") == 0)
+	{
+		debug = true;
+	}
+	else
+	{
+		debug = false;
+	}
+
+
 	if (debug)
 	{
 		//Setup curses
@@ -51,8 +69,8 @@ int main(int argc, char** argv)
 		cbreak();
 		noecho();
 
-		debugDisplay = displaySetup(&chip8);
-		renderDisplay(&chip8, debugDisplay);
+		debugDisplay = debugSetup();
+		debugUpdate(&chip8, debugDisplay);
 
 		while ((c = wgetch(debugDisplay)) && !chip8.programEnd())
 		{
@@ -67,33 +85,8 @@ int main(int argc, char** argv)
 			case 'n':
 			{
 				chip8.emulateCycle();
-				if (chip8.drawFlag)
-				{
-					if (debugMenu)
-					{
-						debugUpdate(&chip8, regWin);
-					}
-					else
-					{
-						renderDisplay(&chip8, debugDisplay);
-					}
-				}
-				break;
-			}
-			case 'm':
-			{
-				if (debugMenu)
-				{
-					delwin(regWin);
-					debugMenu = false;
-					renderDisplay(&chip8, debugDisplay);
-				}
-				else
-				{
-					regWin = debugSetup(debugDisplay);
-					debugUpdate(&chip8, regWin);
-					debugMenu = true;
-				}
+				chip8.decreaseTimers();
+				debugUpdate(&chip8, debugDisplay);
 				break;
 			}
 			default:
@@ -103,23 +96,39 @@ int main(int argc, char** argv)
 	}
 	else //Using GLFW
 	{
+		//Set up display
 		display = setupWindow(&chip8);
 		int width = DISPLAY_WIDTH * DISPLAY_SCALE; 
 		int height = DISPLAY_HEIGHT * DISPLAY_SCALE;
 		createTexture();
 
-		while (!glfwWindowShouldClose(display)) //Change to proper timing
+		//Set up timing
+		int numFrame = opcodesPerSecond / fps;
+		double interval = 1000;
+		interval /= fps;
+		double timeNow = glfwGetTime() * 1000; //In milliseconds
+		double lastFrame = glfwGetTime() * 1000;
+
+		while (!quit) //Change to proper timing
 		{
 			glfwGetFramebufferSize(display, &width, &height);
 			glViewport(0, 0, width, height);
-			chip8.emulateCycle();
-			if (chip8.drawFlag)
-			{
-				//draw shit
-				//display(&chip8);
-				glfwSwapBuffers(display);
-			}
 			glfwPollEvents();
+			quit = glfwWindowShouldClose(display);
+
+			timeNow = glfwGetTime() * 1000;
+			if ((lastFrame + interval) < timeNow)
+			{
+				chip8.emulateCycle();
+				//if (chip8.drawFlag)
+				//{
+					//draw
+					render(&chip8);
+					glfwSwapBuffers(display);
+				//}
+
+				timeNow = glfwGetTime() * 1000;
+			}
 		}
 		glfwDestroyWindow(display);
 		glfwTerminate();

@@ -125,6 +125,7 @@ void Chip8::emulateCycle()
 					//std::cout << std::hex << opcode << ": Running 0x00EE, return from subroutine." << std::endl;
 					//Set pc to the address at the top of the stack, then decrement sp
 					pc = stack[--sp];
+					pc += 2;
 					break;
 				}
                 default:
@@ -352,7 +353,9 @@ void Chip8::emulateCycle()
 					if ((pixel & (0x80 >> xline)) != 0)
 					{
 						if (gfx[(x + xline + ((y + yline) * 64))] == 1)
+						{
 							V[0xF] = 1;
+						}
 						gfx[x + xline + ((y + yline) * 64)] ^= 1;
 					}
 				}
@@ -507,16 +510,17 @@ void Chip8::emulateCycle()
             pc += 2;
             break;
     }
+}
 
-    //Timers decrement by one, 60 times every second when set to value above zero
-    //If sound timer reaches zero, it plays a beep
-    if (delayTimer > 0)
-        delayTimer--;
-    if (soundTimer > 0)
-    {
-        std::cout << "BEEP" << std::endl;
-        soundTimer--;
-    }
+void Chip8::decreaseTimers()
+{
+	if (delayTimer > 0)
+		delayTimer--;
+	if (soundTimer > 0)
+	{
+		std::cout << "BEEP" << std::endl;
+		soundTimer--;
+	}
 }
 
 /**

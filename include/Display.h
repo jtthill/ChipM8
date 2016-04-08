@@ -1,7 +1,7 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
-#pragma once
+
 #include "Chip8.h"
 #include <curses.h>
 #include <glfw3.h>
@@ -12,13 +12,12 @@
 #define DISPLAY_SCALE 10
 
 
-uint8_t screenData[DISPLAY_HEIGHT][DISPLAY_WIDTH][3];
-
 //GLFW display functions
+//Replace with SDL
 GLFWwindow* setupWindow(Chip8* chip8);
 void createTexture();
 void updateTexture(Chip8* chip8);
-void display(Chip8* chip8);
+void render(Chip8* chip8);
 
 
 //GLFW callback functions
@@ -27,10 +26,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 
 //Debug display functions
 
-WINDOW* displaySetup(Chip8* chip8);
-void renderDisplay(Chip8* chip8, WINDOW* win);
-
-WINDOW* debugSetup(WINDOW* orig);
+WINDOW* debugSetup();
 void debugUpdate(Chip8* chip8, WINDOW* win);
 
 #endif

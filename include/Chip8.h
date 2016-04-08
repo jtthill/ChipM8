@@ -42,6 +42,7 @@ public:
     void initialize();
     void emulateCycle();
     void loadGame(const char* filename);
+	void decreaseTimers();
 	bool programEnd();
 	void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 };

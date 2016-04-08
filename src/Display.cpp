@@ -1,5 +1,6 @@
 #include "Display.h"
 
+uint8_t screenData[DISPLAY_HEIGHT][DISPLAY_WIDTH][3];
 
 GLFWwindow* setupWindow(Chip8* chip8)
 {
@@ -73,7 +74,7 @@ void updateTexture(Chip8* chip8)
 	glEnd();
 }
 
-void display(Chip8* chip8)
+void render(Chip8* chip8)
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 	updateTexture(chip8);
@@ -98,47 +99,9 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 //Debug display
 //////////////////////////////////////////////////////
 
-WINDOW* displaySetup(Chip8* chip8)
+WINDOW* debugSetup()
 {
 	WINDOW* win = newwin(0, 0, 0, 0);
-	int count = 0;
-	for (int col = 0; col < DISPLAY_WIDTH; col++)
-	{
-		for (int row = 0; row < DISPLAY_HEIGHT; row++)
-		{
-			wmove(win, row, col);
-			if (chip8->gfx[count] = 0)
-				waddch(win, '.');
-			else
-				waddch(win, '-');
-			count++;
-		}
-	}
-	wrefresh(win);
-	return win;
-}
-
-void renderDisplay(Chip8* chip8, WINDOW* win)
-{
-	int count = 0;
-	for (int col = 0; col < DISPLAY_WIDTH; col++)
-	{
-		for (int row = 0; row < DISPLAY_HEIGHT; row++)
-		{
-			wmove(win, row, col);
-			if (chip8->gfx[count] = 0)
-				waddch(win, '.');
-			else
-				waddch(win, '-');
-			count++;
-		}
-	}
-	wrefresh(win);
-}
-
-WINDOW* debugSetup(WINDOW* orig)
-{
-	WINDOW* win = derwin(orig, DEBUG_HEIGHT, DEBUG_WIDTH, 0, 0);
 	keypad(win, TRUE);
 	wmove(win, 0, 0);
 	wprintw(win, "Regist:   Stack:");
