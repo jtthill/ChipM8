@@ -5,12 +5,12 @@
 #include <SDL.h>
 #include <SDL_opengl.h>
 
-void handleInput(Chip8* chip8, SDL_Event* event)
+void handleInput(Chip8* chip8, SDL_Event event)
 {
-	if (event->type == SDL_KEYDOWN)
+	if (event.type == SDL_KEYDOWN)
 	{
 		int key = -1;
-		switch (event->key.keysym.sym)
+		switch (event.key.keysym.sym)
 		{
 			case SDLK_x: key = 0; break;
 			case SDLK_1: key = 1; break;
@@ -35,10 +35,10 @@ void handleInput(Chip8* chip8, SDL_Event* event)
 			chip8->keyPressed(key);
 		}
 	}
-	else if (event->type == SDL_KEYUP)
+	else if (event.type == SDL_KEYUP)
 	{
 		int key = -1;
-		switch (event->key.keysym.sym)
+		switch (event.key.keysym.sym)
 		{
 			case SDLK_x: key = 0; break;
 			case SDLK_1: key = 1; break;
@@ -173,7 +173,7 @@ int main(int argc, char** argv)
 		{
 			while (SDL_PollEvent(&event))
 			{
-				handleInput(&chip8, &event);
+				handleInput(&chip8, event);
 				if (event.type == SDL_QUIT)
 				{
 					quit = true;
