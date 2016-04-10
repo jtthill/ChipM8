@@ -15,7 +15,7 @@
 //Replacing all GLFW with SDL
 bool createSDL();
 void initGL();
-void render(Chip8* chip8);
+void render(Chip8* chip8, SDL_Window* screen);
 
 
 //Debug display functions

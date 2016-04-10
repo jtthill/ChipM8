@@ -156,17 +156,22 @@ int main(int argc, char** argv)
 	{
 		//Set up display
 		
-		if (!createSDL())
+		if (SDL_Init(SDL_INIT_EVERYTHING))
 		{
 			exit(EXIT_FAILURE);
 		}
+		SDL_Window* screen = SDL_CreateWindow("ChipM8", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 
+			DISPLAY_WIDTH, DISPLAY_HEIGHT, SDL_WINDOW_OPENGL);
+		SDL_GL_CreateContext(screen);
+		initGL();
 
+		SDL_Event event;
 		int fps = 60;
 		int numframe = opcodesPerSecond / fps;
 		bool quit = false;
-		SDL_Event event;
 		float interval = 1000;
 		interval /= fps;
+		
 
 		unsigned int time2 = SDL_GetTicks();
 
@@ -191,7 +196,7 @@ int main(int argc, char** argv)
 					chip8.emulateCycle();
 
 				time2 = current;
-				render(&chip8);
+				render(&chip8, screen);
 			}
 		}
 	}
