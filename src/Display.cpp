@@ -1,20 +1,5 @@
 #include "Display.h"
 
-bool createSDL()
-{
-	//if (SDL_Init(SDL_INIT_EVERYTHING))
-	//{
-		//return false;
-	//}
-	//if (SDL_SetVideoMode(DISPLAY_WIDTH, DISPLAY_HEIGHT, 8, SDL_OPENGL) == NULL)
-	//{
-		//return false;
-	//}
-
-	//initGL();
-	//SDL_WM_SetCaption("ChipM8", NULL);
-	return true;
-}
 
 void initGL()
 {

@@ -11,9 +11,7 @@
 #define DISPLAY_HEIGHT 320
 
 
-
-//Replacing all GLFW with SDL
-bool createSDL();
+//SDL window refreshing and OpenGL setup and refreshing
 void initGL();
 void render(Chip8* chip8, SDL_Window* screen);
 

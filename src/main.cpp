@@ -101,7 +101,7 @@ int main(int argc, char** argv)
 	//Initialize Chip8 core
 	chip8.initialize();
 	chip8.loadGame(filename);
-	opcodesPerSecond = 500; //TODO: Change to read from a file or something
+	opcodesPerSecond = 700; //TODO: Change to read from a file or something
 
 	//Checks the debug flag to see what display mode should be used
 	//If debug is used, display will be ncurses with register values
