@@ -2,9 +2,9 @@
 #define DISPLAY_H
 
 #include "Chip8.h"
-#include <curses.h>
-#include <SDL.h>
-#include <SDL_opengl.h>
+#include <pdcurses\curses.h>
+#include <SDL\SDL.h>
+#include <SDL\SDL_opengl.h>
 #define DEBUG_WIDTH 35
 #define DEBUG_HEIGHT 20
 #define DISPLAY_WIDTH 640
