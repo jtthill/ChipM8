@@ -155,15 +155,16 @@ int main(int argc, char** argv)
 	else //Using SDL
 	{
 		//Set up display
-		SDL_Event event;
 		
 		if (!createSDL())
+		{
 			exit(EXIT_FAILURE);
-		
+		}
+
 		int fps = 60;
 		int numframe = opcodesPerSecond / fps;
-
 		bool quit = false;
+		SDL_Event event;
 		float interval = 1000;
 		interval /= fps;
 
@@ -174,6 +175,7 @@ int main(int argc, char** argv)
 			while (SDL_PollEvent(&event))
 			{
 				handleInput(&chip8, event);
+				
 				if (event.type == SDL_QUIT)
 				{
 					quit = true;
